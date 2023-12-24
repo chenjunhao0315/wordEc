@@ -1,5 +1,4 @@
 #include "PolyMgr.h"
-#include <gmpxx.h>
 
 #include <iostream>
 #include <fstream>
@@ -36,7 +35,7 @@ int main(int argc, char *argv[]) {
     print_poly(poly2);
 
     int eq = polyMgr.poly_eq(poly1, poly2, atoi(argv[3]));
-    printf("poly1 and poly2 are %s", eq ? "Equivalence" : "Non-Equivalence");
+    printf("poly1 and poly2 are %s\n", eq ? "Equivalence" : "Non-Equivalence");
 
     spec.close();
     impl.close();

@@ -13,4 +13,4 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
 find_package(GMP)
 include_directories(${GMP_INCLUDE_DIR})
 
-sword_add_example(wordEc)
+sword_add_example(zero_eq)

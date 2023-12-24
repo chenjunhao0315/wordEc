@@ -1,7 +1,4 @@
 #include "PolyMgr.h"
-#include "readFile.h"
-
-#include <iostream>
 
 sword::PolyMgr polyMgr;
 FILE *f;
@@ -33,7 +30,7 @@ int test_sub_2(void) {
     sword::Polynomial poly_sub = polyMgr.poly_sub(poly1, poly2);
     std::string str = poly_sub.str();
     
-    return str == " +3*x^1 -1*y^1" ? 0 : 1;
+    return str == " +3*x^1 -1*y^1" || str == " -1*y^1 +3*x^1" ? 0 : 1;
 }
 
 int test_sub_3(void) {

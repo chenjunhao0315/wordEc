@@ -1,7 +1,4 @@
 #include "PolyMgr.h"
-#include "readFile.h"
-
-#include <iostream>
 
 sword::PolyMgr polyMgr;
 FILE *f;

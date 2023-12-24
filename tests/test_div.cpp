@@ -1,7 +1,4 @@
 #include "PolyMgr.h"
-#include "readFile.h"
-
-#include <iostream>
 
 sword::PolyMgr polyMgr;
 FILE *f;
@@ -16,7 +13,7 @@ int test_div_0(void) {
     std::string rem_str = rem.str();
     std::string str = quo_str + "\n" + rem_str;
     
-    return str == " +1*x^1 -1*y^1\n" ? 0 : 1;
+    return str == " +1*x^1 -1*y^1\n" || str == " -1*y^1 +1*x^1\n" ? 0 : 1;
 }
 
 int test_div_1(void) {
@@ -29,7 +26,7 @@ int test_div_1(void) {
     std::string rem_str = rem.str();
     std::string str = quo_str + "\n" + rem_str;
     
-    return str == " +1*x^1 +1*y^1\n -4*x^1*y^1" ? 0 : 1;
+    return str == " +1*x^1 +1*y^1\n -4*x^1*y^1" || str == " +1*y^1 +1*x^1\n -4*x^1*y^1" || str == " +1*x^1 +1*y^1\n -4*y^1*x^1" || str == " +1*y^1 +1*x^1\n -4*y^1*x^1" ? 0 : 1;
 }
 
 int test_div_2(void) {

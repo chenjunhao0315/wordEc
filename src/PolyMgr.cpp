@@ -489,8 +489,6 @@ bool PolyMgr::poly_eq(Polynomial &a, Polynomial &b, int bits) {
     for (int i = 0; i < u.size(); ++i) {
         mpz_mul(j, j, u[i].get_mpz_t());
     }
-    int haha = 0;
-    // print_mpz(j);
     for ( ; mpz_cmp_ui(j, 0) >= 0; mpz_sub_ui(j, j, 1)) {
         if (poly.empty()) return true;
         // update k
