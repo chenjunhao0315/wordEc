@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libsword.a CMakeFiles/sword.dir/reverse.cpp.o CMakeFiles/sword.dir/module/aigman.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libsword.a
