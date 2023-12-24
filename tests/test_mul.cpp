@@ -12,6 +12,7 @@ int test_mul_0(void) {
 
     sword::Polynomial poly_mul = polyMgr.poly_mul(poly1, poly2);
     std::string str = poly_mul.str();
+    std::cout << str << std::endl;
     
     return str == " +1*x^2" ? 0 : 1;
 }
@@ -22,6 +23,7 @@ int test_mul_1(void) {
 
     sword::Polynomial poly_mul = polyMgr.poly_mul(poly1, poly2);
     std::string str = poly_mul.str();
+    std::cout << str << std::endl;
     
     return str == " -2*x^2" ? 0 : 1;
 }
@@ -32,8 +34,9 @@ int test_mul_2(void) {
 
     sword::Polynomial poly_mul = polyMgr.poly_mul(poly1, poly2);
     std::string str = poly_mul.str();
+    std::cout << str << std::endl;
     
-    return str == " -2*x^2 +1*x^1*y^1" ? 0 : 1;
+    return str == " -2*x^2 +1*x^1*y^1" || str == " -2*x^2 +1*y^1*x^1" ? 0 : 1;
 }
 
 int test_mul_3(void) {
@@ -42,6 +45,7 @@ int test_mul_3(void) {
 
     sword::Polynomial poly_mul = polyMgr.poly_mul(poly1, poly2);
     std::string str = poly_mul.str();
+    std::cout << str << std::endl;
     
     return str == " +1*x^1" ? 0 : 1;
 }

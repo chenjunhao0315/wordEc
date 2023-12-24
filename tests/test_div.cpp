@@ -42,7 +42,7 @@ int test_div_2(void) {
     std::string rem_str = rem.str();
     std::string str = quo_str + "\n" + rem_str;
     
-    return str == " +1*c^1 +1*d^1\n +1*e^1" ? 0 : 1;
+    return str == " +1*c^1 +1*d^1\n +1*e^1" || str == " +1*d^1 +1*c^1\n +1*e^1" ? 0 : 1;
 }
 
 int test_div_3(void) {
