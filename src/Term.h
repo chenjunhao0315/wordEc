@@ -45,6 +45,7 @@ public:
 	void release();
 	// print
 	void print(FILE *f, bool detail = false) const;
+	std::string str() const;
 
 	const TermElem operator[](size_t i) const;
 	bool operator<(const Term &other) const;

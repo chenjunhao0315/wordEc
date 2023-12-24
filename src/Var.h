@@ -40,6 +40,8 @@ public:
     // get hash
     int hash() const;
 
+	std::string str() const;
+
 	bool operator<(const Var &other) const;
 	bool eq(Var var) const;
 

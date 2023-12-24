@@ -44,6 +44,7 @@ public:
 
 	int  length() const;
 	void print(FILE *f, bool detail = false) const;
+	std::string str() const;
 	void sort() const;
 	int  highest_order() const;
 	int  highest_bits() const;

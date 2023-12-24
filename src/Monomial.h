@@ -36,6 +36,7 @@ public:
 	bool empty() const;
 	// print
 	void print(FILE *f, bool detail = false) const;
+	std::string str() const;
 
 	bool operator<(const Monomial &other) const;
 

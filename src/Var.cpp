@@ -35,6 +35,14 @@ void Var::print(FILE *f, bool detail) const {
 	}
 }
 
+std::string Var::str() const {
+	std::string str;
+	if (data) {
+		str += std::string(name());
+	}
+	return str;
+}
+
 bool Var::eq(Var other) const {
 	return this->data == other.data;
 }

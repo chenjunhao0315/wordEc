@@ -48,6 +48,20 @@ void Term::print(FILE *f, bool detail) const {
 	}
 }
 
+std::string Term::str(void) const {
+	std::string str;
+	if (data) {
+		for (size_t i = 0; i < nvars(); ++i) {
+			auto &term = operator[](i);
+			str += term.var.str();
+			str += "^" + std::to_string(term.expo);
+			if (i != nvars()-1)
+				str += "*";
+		}
+	}
+	return str;
+}
+
 bool Term::eq(Term other) const {
 	return this->data == other.data;
 }

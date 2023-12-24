@@ -16,6 +16,16 @@ void Monomial::print(FILE *f, bool detail) const {
 	((MonomialBase*)data)->term.print(f, detail);
 }
 
+std::string Monomial::str() const {
+	std::string str;
+	char *buffer = mpz_get_str(NULL, 10, ((MonomialBase*)data)->coeff);
+	str += std::string(buffer);
+	free(buffer);
+	str += "*";
+	str += ((MonomialBase*)data)->term.str();
+	return str;
+}
+
 bool Monomial::eq(Monomial &other) const {
 	return mpz_cmp(((MonomialBase*)data)->coeff, MONO_COEFF(other)) == 0 && this->term_eq(other);
 }

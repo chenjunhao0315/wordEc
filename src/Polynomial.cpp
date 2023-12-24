@@ -26,6 +26,20 @@ void Polynomial::print(FILE *f, bool detail) const {
 	}
 }
 
+std::string Polynomial::str() const {
+	std::string str;
+	if (data) {
+		for (size_t i = 0; i < length(); ++i) {
+			auto &mono = operator[](i);
+			str += " ";
+			if (mpz_sgn(((MonomialBase*)mono.data)->coeff) >= 0)
+				str += "+";
+			str += mono.str();
+		}
+	}
+	return str;
+}
+
 void Polynomial::sort() const {
 	auto& monos = ((PolynomialBase*)data)->monomials;
 
