@@ -14,3 +14,5 @@ find_package(GMP)
 include_directories(${GMP_INCLUDE_DIR})
 
 sword_add_example(zero_eq)
+sword_add_example(zero_eq_cl)
+sword_add_example(zero_check)
