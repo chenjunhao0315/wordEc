@@ -63,15 +63,6 @@ int Polynomial::highest_bits() const {
 	return bits;
 }
 
-void Polynomial::ring_z() const {
-	int bits = highest_bits();
-	mpz_t expo;
-	mpz_init(expo);
-	mpz_set_ui(expo, 2);
-	mpz_pow_ui(((PolynomialBase*)data)->ring_z, expo, bits);
-	mpz_clear(expo);
-}
-
 std::set<Var> Polynomial::vars() const {
 	std::set<Var> vars;
 
