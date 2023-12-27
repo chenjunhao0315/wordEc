@@ -44,7 +44,6 @@ SWORD_FORCEINLINE Polynomial::Polynomial() : SmartObj() {}
 SWORD_FORCEINLINE Polynomial::Polynomial(std::vector<Monomial> monomials) : SmartObj() {
 	create();
 	((PolynomialBase*)data)->monomials = monomials;
-	this->ring_z();
 }
 
 SWORD_FORCEINLINE Monomial& Polynomial::operator[](size_t i) {
