@@ -153,13 +153,13 @@ endif()
 #     add_subdirectory(python)
 # endif()
 
-include(ExternalProject)
-set_directory_properties(PROPERTIES EP_PREFIX ${CMAKE_BINARY_DIR}/wordEc)
-ExternalProject_Add(
-    wordEc
-    DOWNLOAD_COMMAND ""
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND cargo build COMMAND cargo build --release
-    BINARY_DIR "${CMAKE_SOURCE_DIR}/wordEc"
-    INSTALL_COMMAND ""
-    LOG_BUILD ON)
+# include(ExternalProject)
+# set_directory_properties(PROPERTIES EP_PREFIX ${CMAKE_BINARY_DIR}/wordEc)
+# ExternalProject_Add(
+#     wordEc
+#     DOWNLOAD_COMMAND ""
+#     CONFIGURE_COMMAND ""
+#     BUILD_COMMAND cargo build COMMAND cargo build --release
+#     BINARY_DIR "${CMAKE_SOURCE_DIR}/wordEc"
+#     INSTALL_COMMAND ""
+#     LOG_BUILD ON)
