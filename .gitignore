@@ -61,3 +61,6 @@ tools/pnnx/python/setup.py
 
 # Xmake
 .xmake/
+
+# Figure
+*.png

@@ -1,4 +1,5 @@
 use egg::*;
+use std::env;
 use std::process::Command;
 
 define_language! {
@@ -206,12 +207,13 @@ fn make_rules() -> Vec<Rewrite<VerilogSymbol, BitWidth>> {
 }
 
 fn enode_zero_eq_merge(egraph: &mut EGraph) {
+    let mut used = Vec::new();
     let mut merge = Vec::new();
     for eclass1 in egraph.classes().map(|e| e.id) {
         let extractor1 = Extractor::new(&egraph, PolyCostFn);
         let (_cost1, expr1) = extractor1.find_best(eclass1);
         for eclass2 in egraph.classes().map(|e| e.id) {
-            if eclass1 == eclass2 {
+            if eclass1 == eclass2 || used.contains(&eclass2) {
                 continue;
             }
             let extractor2 = Extractor::new(&egraph, PolyCostFn);
@@ -224,6 +226,7 @@ fn enode_zero_eq_merge(egraph: &mut EGraph) {
                 None => { false; }
             }
         }
+        used.push(eclass1);
     }
 
     for merge_class in merge {
@@ -232,100 +235,113 @@ fn enode_zero_eq_merge(egraph: &mut EGraph) {
 }
 
 fn main() {
-    // // zero_eq
-    // let expr_spec : RecExpr<VerilogSymbol> = "(+ (- (+ (+ (+ (* 16384 (* (* (var A 12) (var A 12) 16) (* (var A 12) (var A 12) 16) 16) 16) (* 16384 (* (* (var B 8) (var B 8) 16) (* (var B 8) (var B 8) 16) 16) 16) 16) (- (* 64767 (* (var A 12) (var A 12) 16) 16) (* 64767 (* (var B 8) (var B 8) 16) 16) 16) 16) (var A 12) 16) (var B 8) 16) (* (* (* 57344 (var A 12) 16) (var B 8) 16) (- (var A 12) (var B 8) 16) 16) 16)".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(+ (+ (+ (+ (+ (+ (* 24576 (* (var B 8) (* (var A 12) (var A 12) 16) 16) 16) (* 15615 (* (var A 12) (var A 12) 16) 16) 16) (* 8192 (* (var A 12) (* (var B 8) (var B 8) 16) 16) 16) 16) (* 32768 (* (var A 12) (var B 8) 16) 16) 16) (var A 12) 16) (* 17153 (* (var B 8) (var B 8) 16) 16) 16) (* 65535 (var B 8) 16) 16)".parse().unwrap();
+    let args: Vec<String> = env::args().collect();
 
-    // // zero_eq
-    // let expr_spec : RecExpr<VerilogSymbol> = "(* (<< (var A 16) (var M 4) 31) (<< (var B 16) (var N 4) 31) 63)".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(<< (* (var A 16) (var B 16) 32) (+ (var M 4) (var N 4) 5) 63)".parse().unwrap();
-
-    // zero_eq
-    let expr_spec : RecExpr<VerilogSymbol> = "(* (<< (+ (- (+ (+ (+ (* 16384 (* (* (var A 12) (var A 12) 16) (* (var A 12) (var A 12) 16) 16) 16) (* 16384 (* (* (var B 8) (var B 8) 16) (* (var B 8) (var B 8) 16) 16) 16) 16) (- (* 64767 (* (var A 12) (var A 12) 16) 16) (* 64767 (* (var B 8) (var B 8) 16) 16) 16) 16) (var A 12) 16) (var B 8) 16) (* (* (* 57344 (var A 12) 16) (var B 8) 16) (- (var A 12) (var B 8) 16) 16) 16) (var M 4) 31) (<< (var C 16) (var N 4) 31) 63)".parse().unwrap();
-    let expr_impl : RecExpr<VerilogSymbol> = "(<< (* (+ (+ (+ (+ (+ (+ (* 24576 (* (var B 8) (* (var A 12) (var A 12) 16) 16) 16) (* 15615 (* (var A 12) (var A 12) 16) 16) 16) (* 8192 (* (var A 12) (* (var B 8) (var B 8) 16) 16) 16) 16) (* 32768 (* (var A 12) (var B 8) 16) 16) 16) (var A 12) 16) (* 17153 (* (var B 8) (var B 8) 16) 16) 16) (* 65535 (var B 8) 16) 16) (var C 16) 32) (+ (var M 4) (var N 4) 5) 63)".parse().unwrap();
-
-    // // zero_eq
-    // let expr_spec : RecExpr<VerilogSymbol> = "(* 4 (* (var x 3) (var x 3) 3) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(* 4 (var x 3) 3)".parse().unwrap();
-
-    // // zero_eq
-    // let expr_spec : RecExpr<VerilogSymbol> = "(* 8 (var x 3) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(0)".parse().unwrap();
-
-    // // assoc-mul
-    // let expr_spec : RecExpr<VerilogSymbol> = "(+ 4 (+ (var y 3) (+ (var x 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(+ 4 (+ (var x 3) (+ (var y 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
-
-    // // distribute-mul-over-add
-    // let expr_spec : RecExpr<VerilogSymbol> = "(* (var x 3) (+ (var y 3) (var z 3) (3)) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(+ (* (var x 3) (var y 3) (3)) (* (var x 3) (var z 3) (3)) (3))".parse().unwrap();
-
-    // // mul-sum-same
-    // let expr_spec : RecExpr<VerilogSymbol> = "(+ (* (var x 3) (var y 3) (3)) (var y 3) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(* (+ (var x 3) (1) (3)) (var y 3) (3))".parse().unwrap();
-
-    // let expr_spec : RecExpr<VerilogSymbol> = "(* 4 (* (var y 3) (* (var x 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(* 4 (* (var x 3) (* (var y 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
-
-    // let expr_spec : RecExpr<VerilogSymbol> = "(* (var x 3) (var y 3) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(* (var y 3) (var x 3) (3))".parse().unwrap();
-
-    // // left-shift-add
-    // let expr_spec : RecExpr<VerilogSymbol> = "(<< (+ (var a 3) (var b 3) 3) (var c 3) (3))".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(+ (<< (var a 3) (var c 3) 4) (<< (var b 3) (var c 3) 4) (3))".parse().unwrap();
-
-    // // add-right-shift
-    // let expr_spec : RecExpr<VerilogSymbol> = "(<< (+ (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(>> (+ (<< (var a 3) (var c 3) 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
-
-    // // left-shift-mul
-    // let expr_spec : RecExpr<VerilogSymbol> = "(<< (* (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(* (<< (var a 3) (var c 3) 3) (var c 3) 3)".parse().unwrap();
-
-    // // merge-left-shift
-    // let expr_spec : RecExpr<VerilogSymbol> = "(<< (<< (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(<< (var a 3) (+ (var b 3) (var c 3) 3) 3)".parse().unwrap();
-
-    // // merge-right-shift
-    // let expr_spec : RecExpr<VerilogSymbol> = "(>> (>> (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
-    // let expr_impl : RecExpr<VerilogSymbol> = "(>> (var a 3) (+ (var b 3) (var c 3) 3) 3)".parse().unwrap();
-
-    let mut equiv = false;
-    let max_iter = 3;
-    for i in 0..max_iter {
-        let mut runner = Runner::<VerilogSymbol, BitWidth, ()>::default();
-        runner = runner.with_expr(&expr_spec);
-        runner = runner.with_expr(&expr_impl);
-        // merge
-        enode_zero_eq_merge(&mut runner.egraph);
-        runner.egraph.rebuild();
-        // rewrite
-        runner = runner.with_iter_limit(i+1).run(&make_rules());
-        
-        let ids = runner.egraph.equivs(&expr_spec, &expr_impl);
-        if ids.len() > 0 {
-            equiv = true;
-            runner.egraph.dot().to_png("test.png").unwrap();
-            break;
-        }
-        // merge
-        enode_zero_eq_merge(&mut runner.egraph);
-        runner.egraph.rebuild();
-        let ids = runner.egraph.equivs(&expr_spec, &expr_impl);
-        if ids.len() > 0 {
-            equiv = true;
-            runner.egraph.dot().to_png("test.png").unwrap();
-            break;
-        }
-        // runner.stop_reason = None;
-        // runner.iterations.clear();
-    }
-    
-    println!("expr_spec: {}", expr_spec.to_string());
-    println!("expr_impl: {}", expr_impl.to_string());
-    if equiv {
-        println!("expr_spec and expr_impl are equivalence");
+    if args.len() < 3 {
+        println!("Usage: <spec> <impl>")
     } else {
-        println!("expr_spec and expr_impl are \"not\" equivalence");
+        let spec_str = format!("{}", &args[1]);
+        let impl_str = format!("{}", &args[2]);
+        let expr_spec : RecExpr<VerilogSymbol> = spec_str.parse().unwrap();
+        let expr_impl : RecExpr<VerilogSymbol> = impl_str.parse().unwrap();
+        println!("expr_spec: {}", expr_spec.to_string());
+        println!("expr_impl: {}", expr_impl.to_string());
+        // // // zero_eq
+        // let expr_spec : RecExpr<VerilogSymbol> = "(+ (+ (+ (+ (+ (+ (* 156 (* (* (var x 16) (var x 16) 16) (* (* (var x 16) (var x 16) 16) (* (var x 16) (var x 16) 16) 16) 16) 16) (* 62724 (* (var x 16) (* (* (var x 16) (var x 16) 16) (* (var x 16) (var x 16) 16) 16) 16) 16) 16) (* 17968 (* (* (var x 16) (var x 16) 16) (* (var x 16) (var x 16) 16) 16) 16) 16) (* 18661 (* (var x 16) (* (var x 16) (var x 16) 16) 16) 16) 16) (* 43593 (* (var x 16) (var x 16) 16) 16) 16) (* 40224 (var x 16) 16) 16) 13281 16)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(+ (+ (+ (+ (+ (+ (* 156 (* (* (var x 16) (var x 16) 16) (* (* (var x 16) (var x 16) 16) (* (var x 16) (var x 16) 16) 16) 16) 16) (* 5380 (* (var x 16) (* (* (var x 16) (var x 16) 16) (* (var x 16) (var x 16) 16) 16) 16) 16) 16) (* 1584 (* (* (var x 16) (var x 16) 16) (* (var x 16) (var x 16) 16) 16) 16) 16) (* 10469 (* (var x 16) (* (var x 16) (var x 16) 16) 16) 16) 16) (* 27209 (* (var x 16) (var x 16) 16) 16) 16) (* 7456 (var x 16) 16) 16) 13281 16)".parse().unwrap();
+
+        // // zero_eq
+        // let expr_spec : RecExpr<VerilogSymbol> = "(+ (- (+ (+ (+ (* 16384 (* (* (var A 12) (var A 12) 16) (* (var A 12) (var A 12) 16) 16) 16) (* 16384 (* (* (var B 8) (var B 8) 16) (* (var B 8) (var B 8) 16) 16) 16) 16) (- (* 64767 (* (var A 12) (var A 12) 16) 16) (* 64767 (* (var B 8) (var B 8) 16) 16) 16) 16) (var A 12) 16) (var B 8) 16) (* (* (* 57344 (var A 12) 16) (var B 8) 16) (- (var A 12) (var B 8) 16) 16) 16)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(+ (+ (+ (+ (+ (+ (* 24576 (* (var B 8) (* (var A 12) (var A 12) 16) 16) 16) (* 15615 (* (var A 12) (var A 12) 16) 16) 16) (* 8192 (* (var A 12) (* (var B 8) (var B 8) 16) 16) 16) 16) (* 32768 (* (var A 12) (var B 8) 16) 16) 16) (var A 12) 16) (* 17153 (* (var B 8) (var B 8) 16) 16) 16) (* 65535 (var B 8) 16) 16)".parse().unwrap();
+
+        // // zero_eq
+        // let expr_spec : RecExpr<VerilogSymbol> = "(* (<< (var A 16) (var M 4) 31) (<< (var B 16) (var N 4) 31) 63)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(<< (* (var A 16) (var B 16) 32) (+ (var M 4) (var N 4) 5) 63)".parse().unwrap();
+
+        // // zero_eq
+        // let expr_spec : RecExpr<VerilogSymbol> = "(* (<< (+ (- (+ (+ (+ (* 16384 (* (* (var A 12) (var A 12) 16) (* (var A 12) (var A 12) 16) 16) 16) (* 16384 (* (* (var B 8) (var B 8) 16) (* (var B 8) (var B 8) 16) 16) 16) 16) (- (* 64767 (* (var A 12) (var A 12) 16) 16) (* 64767 (* (var B 8) (var B 8) 16) 16) 16) 16) (var A 12) 16) (var B 8) 16) (* (* (* 57344 (var A 12) 16) (var B 8) 16) (- (var A 12) (var B 8) 16) 16) 16) (var M 4) 31) (<< (var C 16) (var N 4) 31) 63)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(<< (* (+ (+ (+ (+ (+ (+ (* 24576 (* (var B 8) (* (var A 12) (var A 12) 16) 16) 16) (* 15615 (* (var A 12) (var A 12) 16) 16) 16) (* 8192 (* (var A 12) (* (var B 8) (var B 8) 16) 16) 16) 16) (* 32768 (* (var A 12) (var B 8) 16) 16) 16) (var A 12) 16) (* 17153 (* (var B 8) (var B 8) 16) 16) 16) (* 65535 (var B 8) 16) 16) (var C 16) 32) (+ (var M 4) (var N 4) 5) 63)".parse().unwrap();
+
+        // // zero_eq
+        // let expr_spec : RecExpr<VerilogSymbol> = "(* 4 (* (var x 3) (var x 3) 3) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(* 4 (var x 3) 3)".parse().unwrap();
+
+        // // zero_eq
+        // let expr_spec : RecExpr<VerilogSymbol> = "(* 8 (var x 3) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(0)".parse().unwrap();
+
+        // // assoc-mul
+        // let expr_spec : RecExpr<VerilogSymbol> = "(+ 4 (+ (var y 3) (+ (var x 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(+ 4 (+ (var x 3) (+ (var y 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
+
+        // // distribute-mul-over-add
+        // let expr_spec : RecExpr<VerilogSymbol> = "(* (var x 3) (+ (var y 3) (var z 3) (3)) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(+ (* (var x 3) (var y 3) (3)) (* (var x 3) (var z 3) (3)) (3))".parse().unwrap();
+
+        // // mul-sum-same
+        // let expr_spec : RecExpr<VerilogSymbol> = "(+ (* (var x 3) (var y 3) (3)) (var y 3) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(* (+ (var x 3) (1) (3)) (var y 3) (3))".parse().unwrap();
+
+        // let expr_spec : RecExpr<VerilogSymbol> = "(* 4 (* (var y 3) (* (var x 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(* 4 (* (var x 3) (* (var y 3) (var x 3) (3)) (3)) (3))".parse().unwrap();
+
+        // let expr_spec : RecExpr<VerilogSymbol> = "(* (var x 3) (var y 3) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(* (var y 3) (var x 3) (3))".parse().unwrap();
+
+        // // left-shift-add
+        // let expr_spec : RecExpr<VerilogSymbol> = "(<< (+ (var a 3) (var b 3) 3) (var c 3) (3))".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(+ (<< (var a 3) (var c 3) 4) (<< (var b 3) (var c 3) 4) (3))".parse().unwrap();
+
+        // // add-right-shift
+        // let expr_spec : RecExpr<VerilogSymbol> = "(<< (+ (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(>> (+ (<< (var a 3) (var c 3) 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
+
+        // // left-shift-mul
+        // let expr_spec : RecExpr<VerilogSymbol> = "(<< (* (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(* (<< (var a 3) (var c 3) 3) (var c 3) 3)".parse().unwrap();
+
+        // // merge-left-shift
+        // let expr_spec : RecExpr<VerilogSymbol> = "(<< (<< (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(<< (var a 3) (+ (var b 3) (var c 3) 3) 3)".parse().unwrap();
+
+        // // merge-right-shift
+        // let expr_spec : RecExpr<VerilogSymbol> = "(>> (>> (var a 3) (var b 3) 3) (var c 3) 3)".parse().unwrap();
+        // let expr_impl : RecExpr<VerilogSymbol> = "(>> (var a 3) (+ (var b 3) (var c 3) 3) 3)".parse().unwrap();
+
+        let mut equiv = false;
+        let max_iter = 3;
+        for i in 0..max_iter {
+            let mut runner = Runner::<VerilogSymbol, BitWidth, ()>::default();
+            runner = runner.with_expr(&expr_spec);
+            runner = runner.with_expr(&expr_impl);
+            runner.egraph.dot().to_png("ori.png").unwrap();
+            // merge
+            enode_zero_eq_merge(&mut runner.egraph);
+            runner.egraph.rebuild();
+            // rewrite
+            runner = runner.with_iter_limit(i+1).run(&make_rules());
+            
+            let ids = runner.egraph.equivs(&expr_spec, &expr_impl);
+            if ids.len() > 0 {
+                equiv = true;
+                runner.egraph.dot().to_png("rw.png").unwrap();
+                break;
+            }
+            // merge
+            enode_zero_eq_merge(&mut runner.egraph);
+            runner.egraph.rebuild();
+            let ids = runner.egraph.equivs(&expr_spec, &expr_impl);
+            if ids.len() > 0 {
+                equiv = true;
+                runner.egraph.dot().to_png("rw.png").unwrap();
+                break;
+            }
+        }
+        
+        if equiv {
+            println!("expr_spec and expr_impl are equivalence");
+        } else {
+            println!("expr_spec and expr_impl are \"not\" equivalence");
+        }
     }
 }
