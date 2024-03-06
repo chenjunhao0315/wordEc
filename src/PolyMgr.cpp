@@ -95,7 +95,7 @@ Monomial PolyMgr::mono_true_div(Monomial &dividend, Monomial &divisor) {
 		bool exist = false;
 		for (int j = 0; j < dividend.nvars(); ++j) {
 			TermElem elem_dividend = dividend_term[j];
-			if (elem_dividend.var.eq(elem_divisor.var)) {
+            if (elem_dividend.var.eq(elem_divisor.var)) {
 				if (elem_dividend.expo >= elem_divisor.expo) {
                     term_expo[j] = elem_dividend.expo - elem_divisor.expo;
 					exist = true;
@@ -332,7 +332,7 @@ Polynomial PolyMgr::poly_mul(Polynomial &a, Polynomial &b) {
 //     rem = this->poly_sub(dividend, p);
 // }
 
-void PolyMgr::poly_div(Polynomial &quo, Polynomial &rem, Polynomial dividend, Polynomial &divisor) {
+void PolyMgr::poly_div(Polynomial &quo, Polynomial &rem, Polynomial dividend, Polynomial divisor) {
     int leading_expo = divisor[0].expo();
     for (int j = 0; j < divisor.length() && divisor[j].expo() >= leading_expo; ++j) {
         Monomial mono_divisor = divisor[j];
@@ -349,6 +349,21 @@ void PolyMgr::poly_div(Polynomial &quo, Polynomial &rem, Polynomial dividend, Po
         }
     }
     rem = dividend;
+}
+
+void PolyMgr::poly_partial_div(Polynomial &quo, Polynomial dividend, Polynomial divisor) {
+    int leading_expo = divisor[0].expo();
+    for (int j = 0; j < divisor.length() && divisor[j].expo() >= leading_expo; ++j) {
+        Monomial mono_divisor = divisor[j];
+        for (int i = 0; i < dividend.length(); ++i) {
+            Monomial mono_dividend = dividend[i];
+            Monomial mono_div = this->mono_true_div(mono_dividend, mono_divisor);
+            if (!mono_div.empty()) {
+                Polynomial quo_poly = this->getPoly(mono_div);
+                quo = this->poly_add(quo, quo_poly);
+            }
+        }
+    }
 }
 
 Polynomial PolyMgr::getVanishPoly(Var &var, mpz_class k) {

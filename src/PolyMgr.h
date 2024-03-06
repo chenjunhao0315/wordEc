@@ -22,6 +22,11 @@ do { \
     printf("%s: ", #poly); poly.print(stdout); printf("\n"); \
 } while (0)
 
+#define print_mono(mono) \
+do { \
+    printf("%s: ", #mono); mono.print(stdout); printf("\n"); \
+} while (0)
+
 #define print_mpz(mpz) \
 do { \
     printf("%s: ", #mpz); mpz_out_str(stdout, 10, mpz); printf("\n"); \
@@ -43,13 +48,14 @@ public:
     Polynomial poly_add(Polynomial &a, Polynomial &b);
     Polynomial poly_sub(Polynomial &a, Polynomial &b);
     Polynomial poly_mul(Polynomial &a, Polynomial &b);
-    void poly_div(Polynomial &quo, Polynomial &rem, Polynomial dividend, Polynomial &divisor);
+    void poly_div(Polynomial &quo, Polynomial &rem, Polynomial dividend, Polynomial divisor);
+    void poly_partial_div(Polynomial &quo, Polynomial dividend, Polynomial divisor);
     Polynomial getConst(long coeff);
     Polynomial getConst(mpz_t coeff);
 
     bool poly_eq(Polynomial &a, Polynomial &b, int bits);
 
-private:
+// private:
     Var getVar(std::string name, int bits);
     Term getTerm(std::set<std::string> &vars_str, std::vector<Var> &vars, std::vector<int> &expos);
     Polynomial getPoly(Var &var);

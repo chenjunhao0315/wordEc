@@ -1,4 +1,3 @@
-
 ##############################################
 
 # configure_file(platform.h.in ${CMAKE_CURRENT_BINARY_DIR}/platform.h)
@@ -20,6 +19,8 @@ set(sword_SRCS
     Monomial.cpp
     Polynomial.cpp
     PolyMgr.cpp
+
+    Rewrite.cpp
 )
 
 sword_src_group(sword_SRCS "sources")
