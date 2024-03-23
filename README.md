@@ -44,12 +44,12 @@ sh build.sh
 ```
 #### Some examples
 ##### Small Example 1
-Testing $$4x^2\equiv 4x$$ when $$x$$is $$3$$bits.
+Testing $4x^2\equiv 4x$ when $x$ is $3$ bits.
 ```
 ./egraph "(* 4 (* (var x 3) (var x 3) 3) (3))" "(* 4 (var x 3) 3)"
 ```
 ##### Small Example 2
-Testing $$(A\ll M)\cdot (B\ll N)\equiv (A\cdot B)\ll (M+N)$$ when $$A$$ is $$12$$bits, $$B$$ is $$8$$bits, $$M, N$$ are $$4$$bits.
+Testing $(A\ll M)\cdot (B\ll N)\equiv (A\cdot B)\ll (M+N)$ when $A$ is $12$ bits, $B$ is $8$ bits, $M, N$ are $4$ bits.
 ```
 ./egraph "(* (<< (var A 12) (var M 4) 31) (<< (var B 8) (var N 4) 31) 63)" "(<< (* (var A 12) (var B 8) 32) (+ (var M 4) (var N 4) 5) 63)"
 ```
