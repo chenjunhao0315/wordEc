@@ -249,9 +249,9 @@ def rewrite_smt(args, silent=False):
             # print(order)
             for j in range(len(order)):
                 # print(bucket_start, bucket_end, min(bucket_end + uncertain, vars[vars_vec[i]]))
-                valid = range(j, min(bucket_end + uncertain, vars[vars_vec[i]]))
+                valid = range(j, min(bucket_end + uncertain, min(outbit, vars[vars_vec[i]])))
                 for var in order[j]:
-                    for l in range(vars[vars_vec[i]]):
+                    for l in range(min(outbit, vars[vars_vec[i]])):
                         if l in valid:
                             continue
                         if not silent:
@@ -273,8 +273,8 @@ def rewrite_smt(args, silent=False):
                         for b2 in bucket2:
                             var2 = vars_vec[i] + "_bit_" + b2.split("_")[1] + "_coeff_"
                             
-                            for m in range(vars[vars_vec[i]]):
-                                for n in range(m, vars[vars_vec[i]]):
+                            for m in range(min(outbit, vars[vars_vec[i]])):
+                                for n in range(m, min(outbit, vars[vars_vec[i]])):
                                     assert_imply(var1 + str(m), "(not " + var2 + str(n) + ")", output, silent)
 
         # Get Terms
@@ -332,13 +332,13 @@ def rewrite_smt(args, silent=False):
 
             if len(t) > 1:
                 coeff = int(t.pop(0)) % (2**outbit)
+                coeff = coeff if coeff >= 0 else coeff + 2**outbit
                 expr = sym.Integer(1)
                 for m in t:
                     expr *= sym.Symbol(m)
                 expr = expr.as_expr()
 
                 quo = poly_div(poly_assume, expr, all_vars)
-                coeff = coeff if coeff >= 0 else coeff + 2**outbit
                 
                 assert_coeff(quo, coeff, 2**outbit, output, silent)
 
@@ -346,6 +346,7 @@ def rewrite_smt(args, silent=False):
                 poly_assume = poly_assume.expand()
             else:
                 coeff = int(t.pop(0)) % (2**outbit)
+                coeff = coeff if coeff >= 0 else coeff + 2**outbit
                 const = sym.Integer(0)
                 monomials = poly_assume.args
                 for mono in monomials:
