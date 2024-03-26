@@ -298,23 +298,27 @@ def rewrite_smt(args, silent=False):
             term_set.add(frozenset(t))
 
         # Form Assumption
+        # [(s_0, [(v_00, p_00), (v_01, p_01), ...]), (s_1, [(v_10, p_10), (v_11, p_11), ...]), ...]
+        assume_form = []
         mono_num = 0
         poly_assume = sym.Integer(0)
         for term in term_set:
             s = "s_" + str(mono_num)
             # constraint = "(assert (and (>= {} 0) (< {} {})))".format(s, s, 2**outbit)
             declare(s, "Int", output, silent)
-            # print(constraint)
             mono_num += 1
+            monos = []
             expr = "; " + s
             expr_sym = sym.Symbol(s)
             for t in term:
+                monos.append((t, 1))
                 expr += " * " + t
                 expr_sym *= polys[t]
             if not silent:
                 print(expr)
             if output:
                 output.write(expr + "\n")
+            assume_form.append((s, monos))
             expr_sym = expr_sym.expand()
             poly_assume += expr_sym
 
@@ -416,10 +420,12 @@ def rewrite_smt(args, silent=False):
 
     print("done")
 
+    return vars, assume_form
+
 def main():
     args = parse_arguments()
 
-    rewrite_smt(args=args, silent=True)
+    bit_widths, assume_form = rewrite_smt(args=args, silent=True)
 
     
 
