@@ -3,7 +3,8 @@ import sympy as sym
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--file', default = "./benchmark/case04_cir1.poly")
+    parser.add_argument('--file', default = "./benchmark/case05_cir1.poly")
+    parser.add_argument('--ground', default = "./benchmark/case05_cir2.ground")
     parser.add_argument('--output', default = "./rewrite_smt.constraint")
     parser.add_argument('--output_word', default = "./rewrite_smt.word")
     parser.add_argument('--enable_signed', default=True)
@@ -176,6 +177,48 @@ def comment(describe, output = None, silent=False):
         print("; {}".format(describe))
     if output:
         output.write("{}\n".format(describe))
+
+def create_possibleList(bit_width1, bit_width2, polynomial1, polynomial2):
+    possible_list = []
+    for i in range(len(polynomial1)):
+        temp_possible = []
+        for j in range(len(polynomial2)):
+            ## check whether term i can be mapped to term j
+            # print(polynomial1[i] ,polynomial2[j])
+            if(len(polynomial1[i][1]) == 0 and len(polynomial2[j][1]) == 0):
+                if(polynomial1[i][0] != polynomial1[j][0]):
+                    # print("const no match")
+                    continue
+            if(len(polynomial1[i][1]) != len(polynomial2[j][1])):## var num not equi
+                # print("var num no match")
+                continue
+            monomial1 = []
+            monomial2 = []
+            for t in polynomial1[i][1]:
+                monomial1.append(t[1])
+            for t in polynomial2[j][1]:
+                monomial2.append(t[1])
+            monomial1.sort()
+            monomial2.sort()
+            if(monomial1 != monomial2):
+                # print("var power no match")
+                continue
+            term_match = True
+            for t in polynomial1[i][1]:
+                power = t[1]
+                bitwidth = bit_width1[t[0]]
+                at_least_one = False
+                for m in polynomial2[j][1]:
+                    if((m[1] == power) and (bit_width2[m[0]] == bitwidth)):
+                        at_least_one = True
+                if(not at_least_one):
+                    term_match = False
+                    break
+            if(term_match):
+                temp_possible.append(j)
+        possible_list.append(temp_possible)
+    
+    return possible_list
 
 def rewrite_smt(args, silent=False):
     print("Generate SMT ... ", end='')
@@ -413,19 +456,158 @@ def rewrite_smt(args, silent=False):
 
         # print(all_combs)
 
-        if not silent:
-            print("(check-sat)\n(get-model)")
-        if output:
-            output.write("(check-sat)\n(get-model)\n")
+        # if not silent:
+        #     print("(check-sat)\n(get-model)")
+        # if output:
+        #     output.write("(check-sat)\n(get-model)\n")
 
     print("done")
 
     return vars, assume_form
 
+def read_cir2(filepath):
+    with open(filepath, "r") as f:
+        outbit = int(f.readline())
+        var_num = int(f.readline())
+
+        # Read variables
+        vars_vec = []
+        vars = dict()
+        for i in range(var_num):
+            var = f.readline().rstrip().split(' ')
+            vars[var[0]] = int(var[1])
+            vars_vec.append(var[0])
+
+        terms = f.readlines()
+        terms = [term.rstrip() for term in terms]
+        def countMul(term):
+            return term.count("*")
+        terms.sort(key=countMul, reverse=True)
+
+        form = []
+
+        for term in terms:
+            t = term.split('*')
+            coeff = int(t.pop(0))
+            t = [x.split("_")[0] for x in t]
+            t = [(x, 1) for x in t]
+            form.append((coeff, t))
+
+    return vars, form
+
+def one_step_constraint(assume_form, assume_vars, reference_form, reference_vars, possible_list, args, silent=False):
+    with open(args.output, "a") as f:
+        print(f)
+        reference_vars = [key for key in reference_vars.keys()]
+        assume_vars = [key for key in assume_vars.keys()]
+
+        vars = []
+        for ref in assume_vars:
+            for asm in reference_vars:
+                declare("vars_{}_{}".format(ref, asm), "Bool", f, silent)
+            vars.append(["vars_{}_{}".format(ref, asm) for asm in reference_vars])
+
+        terms = []
+        for i in range(len(assume_form)):
+            for j in range(len(reference_form)):
+                declare("term_{}_{}".format(i, j), "Bool", f, silent)
+            terms.append(["term_{}_{}".format(i, j) for j in range(len(reference_form))])
+
+        for var in assume_vars:
+            declare("neg_{}".format(var), "Bool", f, silent)
+
+        # print(assume_form)
+        for i in range(len(possible_list)):
+            if len(possible_list[i]) == 0:
+                assert_eq(assume_form[i][0], 0, f, silent)
+                continue
+            for j in possible_list[i]:
+                # term negation implication
+                trans_var = []
+                for term in assume_form[i][1]:
+                    if term[1] % 2:
+                        trans_var.append(term[0])
+
+                neg_cond = ""
+                for var in trans_var:
+                    neg_cond += " neg_" + var
+                neg_cond = "(xor" + neg_cond + ")"
+                neg_imp = "(assert (=> {} (= {} (ite {} -{} {}))))".format(terms[i][j], assume_form[i][0], neg_cond, reference_form[j][0], reference_form[j][0])
+                if not silent:
+                    print(neg_imp)
+                if f:
+                    f.write("{}\n".format(neg_imp))
+                var_cond = ""
+                for m in range(len(assume_form[i][1])):
+                    at_least_cond = ""
+                    for n in range(len(reference_form[j][1])):
+                        at_least_cond += " vars_" + assume_form[i][1][m][0] + "_" + reference_form[j][1][n][0]
+                        # print(assume_form[i][1][m][0], reference_form[j][1][n][0])
+                    at_least_cond = "((_ at-least 1)" + at_least_cond + ")"
+                    var_cond += " " + at_least_cond
+                
+                var_cond = "(and" + var_cond + ")"
+                if not silent:
+                    print("(assert (=> {} {}))".format(terms[i][j], var_cond))
+                if f:
+                    f.write("(assert (=> {} {}))\n".format(terms[i][j], var_cond))
+                # print(var_cond)
+
+        vars_cond = ""
+        for i in range(len(reference_vars)):
+            var_cond = ""
+            for j in range(len(assume_vars)):
+                var_cond += " " + vars[j][i]
+            var_cond = "((_ at-most 1)" + var_cond + ")"
+            vars_cond += " " + var_cond
+
+        vars_cond = "(and" + vars_cond + ")"
+        if not silent:
+            print("(assert {})".format(vars_cond))
+        if f:
+            f.write("(assert {})\n".format(vars_cond))
+
+        term_cond = ""
+        for i in range(len(possible_list)):
+            if len(possible_list[i]) == 0:
+                continue
+            at_least_cond = ""
+            for j in possible_list[i]:
+                at_least_cond += " " + terms[i][j]
+            at_least_cond = "((_ at-least 1)" + at_least_cond + ")"
+            term_cond += " " + at_least_cond
+
+        for i in range(len(reference_form)):
+            at_most_cond = ""
+            for (index_assume, l) in enumerate(possible_list):
+                if len(l) == 0:
+                    continue
+                if i in l:
+                    # print(terms[index_assume][i])
+                    at_most_cond += " " + terms[index_assume][i]
+            at_most_cond = "((_ at-most 1)" + at_most_cond + ")"
+            term_cond += " " + at_most_cond
+
+        term_cond = "(and" + term_cond + ")"
+        if not silent:
+            print("(assert {})".format(term_cond))
+        if f:
+            f.write("(assert {})\n".format(term_cond))
+
+
 def main():
     args = parse_arguments()
 
-    bit_widths, assume_form = rewrite_smt(args=args, silent=True)
+    bit_widths_1, assume_form = rewrite_smt(args=args, silent=False)
+    bit_widths_2, reference_form = read_cir2(filepath=args.ground)
+
+    possible_list = create_possibleList(bit_width1=bit_widths_1, bit_width2=bit_widths_2, polynomial1=assume_form, polynomial2=reference_form)
+
+    one_step_constraint(assume_form, bit_widths_1, reference_form, bit_widths_2, possible_list, args)
+
+    with open(args.output, "a") as output:
+        output.write("(check-sat)\n")
+        output.write("(get-model)\n")
 
     
 
