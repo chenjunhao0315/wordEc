@@ -1,0 +1,56 @@
+benchmark/case30/cir1.v
+26
+9 in1_0 in1_1 in1_2 in1_3 in1_4 in1_5 in1_6 in1_7 in1_8
+9 in8_0 in8_1 in8_2 in8_3 in8_4 in8_5 in8_6 in8_7 in8_8
+9 in12_0 in12_1 in12_2 in12_3 in12_4 in12_5 in12_6 in12_7 in12_8
+9 in16_0 in16_1 in16_2 in16_3 in16_4 in16_5 in16_6 in16_7 in16_8
+9 in20_0 in20_1 in20_2 in20_3 in20_4 in20_5 in20_6 in20_7 in20_8
+9 in24_0 in24_1 in24_2 in24_3 in24_4 in24_5 in24_6 in24_7 in24_8
+8 in2_0 in2_1 in2_2 in2_3 in2_4 in2_5 in2_6 in2_7
+8 in9_0 in9_1 in9_2 in9_3 in9_4 in9_5 in9_6 in9_7
+8 in13_0 in13_1 in13_2 in13_3 in13_4 in13_5 in13_6 in13_7
+8 in17_0 in17_1 in17_2 in17_3 in17_4 in17_5 in17_6 in17_7
+8 in21_0 in21_1 in21_2 in21_3 in21_4 in21_5 in21_6 in21_7
+8 in25_0 in25_1 in25_2 in25_3 in25_4 in25_5 in25_6 in25_7
+1 in3_0
+1 in4_0
+1 in6_0
+1 in7_0
+1 in10_0
+1 in11_0
+1 in14_0
+1 in15_0
+1 in18_0
+1 in19_0
+1 in22_0
+1 in23_0
+6 in5_0 in5_1 in5_2 in5_3 in5_4 in5_5
+17 out1_0 out1_1 out1_2 out1_3 out1_4 out1_5 out1_6 out1_7 out1_8 out1_9 out1_10 out1_11 out1_12 out1_13 out1_14 out1_15 out1_16
+benchmark/case30/cir2.v
+26
+9 in1_0 in1_1 in1_2 in1_3 in1_4 in1_5 in1_6 in1_7 in1_8
+9 in8_0 in8_1 in8_2 in8_3 in8_4 in8_5 in8_6 in8_7 in8_8
+9 in12_0 in12_1 in12_2 in12_3 in12_4 in12_5 in12_6 in12_7 in12_8
+9 in16_0 in16_1 in16_2 in16_3 in16_4 in16_5 in16_6 in16_7 in16_8
+9 in20_0 in20_1 in20_2 in20_3 in20_4 in20_5 in20_6 in20_7 in20_8
+9 in24_0 in24_1 in24_2 in24_3 in24_4 in24_5 in24_6 in24_7 in24_8
+8 in2_0 in2_1 in2_2 in2_3 in2_4 in2_5 in2_6 in2_7
+8 in9_0 in9_1 in9_2 in9_3 in9_4 in9_5 in9_6 in9_7
+8 in13_0 in13_1 in13_2 in13_3 in13_4 in13_5 in13_6 in13_7
+8 in17_0 in17_1 in17_2 in17_3 in17_4 in17_5 in17_6 in17_7
+8 in21_0 in21_1 in21_2 in21_3 in21_4 in21_5 in21_6 in21_7
+8 in25_0 in25_1 in25_2 in25_3 in25_4 in25_5 in25_6 in25_7
+1 in3_0
+1 in4_0
+1 in6_0
+1 in7_0
+1 in10_0
+1 in11_0
+1 in14_0
+1 in15_0
+1 in18_0
+1 in19_0
+1 in22_0
+1 in23_0
+6 in5_0 in5_1 in5_2 in5_3 in5_4 in5_5
+17 out1_0 out1_1 out1_2 out1_3 out1_4 out1_5 out1_6 out1_7 out1_8 out1_9 out1_10 out1_11 out1_12 out1_13 out1_14 out1_15 out1_16

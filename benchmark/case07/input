@@ -1,0 +1,38 @@
+benchmark/case07/cir1.v
+17
+6 a_0 a_1 a_2 a_3 a_4 a_5
+6 b_0 b_1 b_2 b_3 b_4 b_5
+6 c_0 c_1 c_2 c_3 c_4 c_5
+6 d_0 d_1 d_2 d_3 d_4 d_5
+6 e_0 e_1 e_2 e_3 e_4 e_5
+6 f_0 f_1 f_2 f_3 f_4 f_5
+6 g_0 g_1 g_2 g_3 g_4 g_5
+6 h_0 h_1 h_2 h_3 h_4 h_5
+6 i_0 i_1 i_2 i_3 i_4 i_5
+6 j_0 j_1 j_2 j_3 j_4 j_5
+6 k_0 k_1 k_2 k_3 k_4 k_5
+6 l_0 l_1 l_2 l_3 l_4 l_5
+6 m_0 m_1 m_2 m_3 m_4 m_5
+6 n_0 n_1 n_2 n_3 n_4 n_5
+6 o_0 o_1 o_2 o_3 o_4 o_5
+6 p_0 p_1 p_2 p_3 p_4 p_5
+9 q_0 q_1 q_2 q_3 q_4 q_5 q_6 q_7 q_8
+benchmark/case07/cir2.v
+17
+6 a_0 a_1 a_2 a_3 a_4 a_5
+6 b_0 b_1 b_2 b_3 b_4 b_5
+6 c_0 c_1 c_2 c_3 c_4 c_5
+6 d_0 d_1 d_2 d_3 d_4 d_5
+6 e_0 e_1 e_2 e_3 e_4 e_5
+6 f_0 f_1 f_2 f_3 f_4 f_5
+6 g_0 g_1 g_2 g_3 g_4 g_5
+6 h_0 h_1 h_2 h_3 h_4 h_5
+6 i_0 i_1 i_2 i_3 i_4 i_5
+6 j_0 j_1 j_2 j_3 j_4 j_5
+6 k_0 k_1 k_2 k_3 k_4 k_5
+6 l_0 l_1 l_2 l_3 l_4 l_5
+6 m_0 m_1 m_2 m_3 m_4 m_5
+6 n_0 n_1 n_2 n_3 n_4 n_5
+6 o_0 o_1 o_2 o_3 o_4 o_5
+6 p_0 p_1 p_2 p_3 p_4 p_5
+9 q_0 q_1 q_2 q_3 q_4 q_5 q_6 q_7 q_8

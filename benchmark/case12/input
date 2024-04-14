@@ -1,0 +1,13 @@
+benchmark/case12/cir1.v
+4
+4 a_0 a_1 a_2 a_3
+4 b_0 b_1 b_2 b_3
+4 c_0 c_1 c_2 c_3
+4 d_0 d_1 d_2 d_3
+benchmark/case12/cir2.v
+4
+4 a_0 a_1 a_2 a_3
+4 b_0 b_1 b_2 b_3
+4 c_0 c_1 c_2 c_3
+4 d_0 d_1 d_2 d_3
+
